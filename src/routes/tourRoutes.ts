@@ -1,9 +1,7 @@
-const express = require('express');
-const routerControllers = require('./../controllers/tourController');
+import { Router } from 'express';
+import * as routerControllers from './../controllers/tourController';
 
-const router = express.Router();
-
-router.param('id', routerControllers.checkID)
+const router = Router();
 
 router.route('/')
     .get(routerControllers.getAllTours)
@@ -15,4 +13,4 @@ router.route('/:id')
     .delete(routerControllers.deleteTour);
 
 
-module.exports = router;
+export default router;

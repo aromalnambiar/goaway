@@ -1,14 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
-
-interface Tour {
-  id: number;
-  name: string;
-  price: number;
-}
-
-const tours: any = []
+import Tour from '../model/tourModel';
 
 export const checkBody = (req: Request, res: Response, next: NextFunction) => {
   if (!req.body.name || !req.body.price) {
@@ -20,22 +13,22 @@ export const checkBody = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export const getAllTours = (req: Request, res: Response) => {
+export const getAllTours = async (req: Request, res: Response) => {
+  try {
+    const tours = await Tour.find();
 
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {}
 };
 
-export const getTour = (req: Request, res: Response) => {
-  console.log(req.params);
-  const id = parseInt(req.params.id, 10);
-
-  const tour = tours.find((el: Tour) => el.id === id);
+export const getTour = async (req: Request, res: Response) => {
+  const tour = await Tour.findById(req.params.id);
 
   res.status(200).json({
     status: 'success',
@@ -45,12 +38,7 @@ export const getTour = (req: Request, res: Response) => {
   });
 };
 
-export const createTour = (req: Request, res: Response) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour: Tour = { id: newId, ...req.body };
-
-  tours.push(newTour);
-
+export const createTour = async (req: Request, res: Response) => {
   fs.writeFile(
     path.join(__dirname, '../dev-data/tours-simple.json'),
     JSON.stringify(tours),
@@ -61,17 +49,11 @@ export const createTour = (req: Request, res: Response) => {
           message: 'Error writing file',
         });
       }
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
     }
   );
 };
 
-export const updateTour = (req: Request, res: Response) => {
+export const updateTour = async (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
     data: {
@@ -80,7 +62,7 @@ export const updateTour = (req: Request, res: Response) => {
   });
 };
 
-export const deleteTour = (req: Request, res: Response) => {
+export const deleteTour = async (req: Request, res: Response) => {
   res.status(204).json({
     status: 'success',
     data: null,

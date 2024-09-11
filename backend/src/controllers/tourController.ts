@@ -39,18 +39,7 @@ export const getTour = async (req: Request, res: Response) => {
 };
 
 export const createTour = async (req: Request, res: Response) => {
-  fs.writeFile(
-    path.join(__dirname, '../dev-data/tours-simple.json'),
-    JSON.stringify(tours),
-    (err) => {
-      if (err) {
-        return res.status(500).json({
-          status: 'fail',
-          message: 'Error writing file',
-        });
-      }
-    }
-  );
+  Tour.create(req.body);
 };
 
 export const updateTour = async (req: Request, res: Response) => {
